@@ -11,7 +11,7 @@
                     <p class="card-text">
                         Aqui você cadastra seus produtos!!!
                     </p>
-                    <a href="/produtos" class="btn btn-primary">Cadastre os produtos</a>
+                    <a href="/produtos-api" class="btn btn-primary">Cadastre os produtos</a>
                 </div>  
             </div>
             <div class="card border border-primary">

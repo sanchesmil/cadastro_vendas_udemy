@@ -8,17 +8,18 @@ use Illuminate\Http\Request;
 
 class ControladorProduto extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+  
+    public function indexView()
     {
-        $produtos = Produto::all();
-
-        return view('produtos', compact('produtos'));
+        return view('produtos');
     }
+
+    // Retorna 'produtos' no formato Json
+    public function index(){
+        $produtos = Produto::all();
+        return $produtos->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -32,23 +33,18 @@ class ControladorProduto extends Controller
         return view('novoproduto', compact('categorias'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   // Retorna um recurso 'produto'
     public function store(Request $request)
     {
         $produto = new Produto();
-        $produto->nome = $request->nomeProduto;
+        $produto->nome = $request->nome;
         $produto->estoque = $request->estoque;
         $produto->price = $request->preco;
         $produto->categoria_id = $request->categoria_id;
 
         $produto->save();
 
-        return redirect('/produtos');
+        return json_encode($produto);
     }
 
     /**
@@ -59,7 +55,11 @@ class ControladorProduto extends Controller
      */
     public function show($id)
     {
-        //
+        $produto = Produto::find($id); 
+        if(isset($produto)){
+            return json_encode($produto);
+        }       
+        return response("Produto não encontrado", 404);
     }
 
     /**
@@ -85,43 +85,35 @@ class ControladorProduto extends Controller
        
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Atualiza e retorna o produto no formato JSON 
     public function update(Request $request, $id)
     {
         $produto = Produto::find($id);
      
         if(isset($produto)){
-            $produto->nome = $request->nomeProduto;
+            $produto->nome = $request->nome;
             $produto->estoque = $request->estoque;
             $produto->price = $request->preco;
             $produto->categoria_id = $request->categoria_id;
 
             $produto->save();
-        }
 
-        return redirect('/produtos');
+            return json_encode($produto);
+        }       
+        return response("Produto não encontrado", 404);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   // Remove o produto
     public function destroy($id)
     {
         $produto = Produto::find($id);
 
-        if($produto)
-            $produto->delete();  // No caso do produto é SoftDelete
-
-        return redirect('/produtos');
+        if(isset($produto)){
+            $produto->delete();  // No caso do produto, é SoftDelete
+            return response("OK", 200); 
+        }
+        return response("Produto não encontrado", 404);
     }
+
 }
 

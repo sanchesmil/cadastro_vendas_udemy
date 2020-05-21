@@ -107,4 +107,13 @@ class ControladorCategoria extends Controller
 
         return redirect('/categorias');
     }
+
+    // Retorna um recurso 'categorias'
+    public function indexJson()
+    {
+        $categorias = Categoria::all();
+
+        return json_encode($categorias);
+    }
+
 }
