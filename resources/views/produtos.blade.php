@@ -1,4 +1,4 @@
-@extends('layouts.app',['urlAtual'=>'produtos-api'])
+@extends('layouts.app',['urlAtual'=>'produtos'])
 
 @section('body')
 
@@ -50,7 +50,7 @@
                         <div class="form-group">
                             <label for="precoProduto" class="control-label">Preço</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="precoProduto" placeholder="Preço do Produto">
+                                <input type="float" class="form-control" id="precoProduto" placeholder="Preço do Produto">
                             </div>
                         </div>
                         <div class="form-group">
@@ -79,7 +79,7 @@
     </div>
 @endsection
 
-{{-- Cria uma seção de javascript p/ abrir a modal que cadastra novos usuários --}}
+{{-- Cria uma seção de javascript p/ exibir produtos e categorias, e p/ abrir a modal que cadastra novos produtos --}}
 @section('javascript')
     <script>
 
@@ -115,6 +115,7 @@
             $('#dlgProdutos').modal('show');
         }
 
+        // Método que monta uma 'tr' com os dados do produto
         function montarLinha(produto){
             var linha = '<tr> ' +
                         '<td>' + produto.id + '</td>' +
@@ -130,11 +131,34 @@
             return linha;
         }
 
+        // Exibe a modal 'dlgProdutos' populada
         function editar(id){
+
+            // 2 FORMAS de popular a Modal: 
+
+            // 1ª FORMA: Pegando os valores da própria tabela, sem consultar o banco
+            linhasDaTabela = $('#tabelaProdutos>tbody>tr'); // Pega todas as tr's
+
+            linhasDaTabela.filter(function(i, elemento){  // Filtra a 'tr' desejada pelo 'id'
+                if(elemento.cells[0].textContent == id){  
+
+                    //Popula os campos da modal com os valores da tr selecionada
+                    $('#id').val(elemento.cells[0].textContent),
+                    $('#nomeProduto').val(elemento.cells[1].textContent),
+                    $('#quantidadeProduto').val(elemento.cells[2].textContent),
+                    $('#precoProduto').val(elemento.cells[3].textContent),                   
+                    $('#categoriaProduto').val(elemento.cells[4].textContent),
+                    
+                    $('#dlgProdutos').modal('show')  // Exibe a modal                
+                }
+            });
+
+            // 2ª FORMA: Consultando o banco 
+            /*
             $.getJSON('api/produtos/'+ id,function(produto){
                 //console.log(produto);
 
-                //Popula os campos da modal com os valores retornados
+                //Popula os campos da modal com os valores retornados do banco
                 $('#id').val(produto.id),
                 $('#nomeProduto').val(produto.nome),
                 $('#precoProduto').val(produto.price),
@@ -144,6 +168,8 @@
                 $('#dlgProdutos').modal('show')  // Exibe a modal
 
             });
+
+            */
         }
 
         // Método que remove o produto via Ajax
@@ -163,9 +189,9 @@
         }
 
         function removeLinha(id){
-            linhasDaTabela = $('#tabelaProdutos>tbody>tr'); // Pega todas as tr's
+            linhasDaTabela = $('#tabelaProdutos>tbody>tr'); // Obtém todas as tr's
 
-            linha = linhasDaTabela.filter(function(i, elemento){  // Pega a 'tr' através do id
+            linha = linhasDaTabela.filter(function(i, elemento){  // Filtra a 'tr' através do id
                 return elemento.cells[0].textContent == id
             })
 
